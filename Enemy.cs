@@ -42,7 +42,6 @@ namespace TestingMap
             Console.ResetColor();
         }
 
-
         public void Move(Map map, Player player)
         {
             // If the enemy is not alive, no need to move

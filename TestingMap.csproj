@@ -46,6 +46,7 @@
     <Compile Include="Character.cs" />
     <Compile Include="Diamond.cs" />
     <Compile Include="Enemy.cs" />
+    <Compile Include="Exit.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="Player.cs" />

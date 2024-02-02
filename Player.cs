@@ -11,8 +11,8 @@ namespace TestingMap
         public int maxHP;
         public int currentHP;
         private int damage;
-        private int diamonds;
-        private bool youWin;
+        public int diamonds;
+        internal bool YouWin { get; set; }
         private bool gameOver;
 
         public Player(int maxHP, int damage) : base(10, 10)
@@ -21,11 +21,11 @@ namespace TestingMap
             currentHP = maxHP;
             this.damage = damage;
             diamonds = 0;
-            youWin = false;
+            //youWin = false;
             gameOver = false;
         }
 
-        public bool YouWin => youWin;
+        //public bool YouWin => youWin;
         public bool GameOver => gameOver;
         public int Diamonds => diamonds;
 
@@ -37,6 +37,14 @@ namespace TestingMap
             Console.ResetColor();
   
         }
+        public void CheckForWin(Map map, Exit exit)
+        {
+            if (map.mapLayout[posY, posX] == 'X')
+            {
+                YouWin = true;
+            }
+        }
+
         public Player(int maxHP, int initialPosX, int initialPosY) : base(initialPosX, initialPosY)
         {
             this.maxHP = maxHP;
@@ -120,11 +128,11 @@ namespace TestingMap
             enemy.ReceiveDamage(damage);
         }
 
-        public void PlayerInput(Map map, List<Enemy> enemies)
+        public void PlayerInput(Map map, List<Enemy> enemies, Exit exit)
         {
             bool moved = false;
 
-            int movementX = posX;
+             int movementX = posX;
             int movementY = posY;
 
             ConsoleKeyInfo playerMovement = Console.ReadKey(true);

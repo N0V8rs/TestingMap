@@ -11,6 +11,7 @@ namespace TestingMap
         private Map map;
         private Enemy enemy;
         private Player player;
+        private Exit exit;
         private Diamond diamonds;
         private List<Enemy> enemies;
         public List<Spike> spikes;
@@ -19,6 +20,7 @@ namespace TestingMap
         {
             map = new Map("TextFile1.txt");
             player = new Player(100, 50);
+            exit = new Exit(10, 5);
             enemies = new List<Enemy>
             {
                 // Spawns an Enemey
@@ -30,12 +32,42 @@ namespace TestingMap
                  new Spike(6, 5),
                  new Spike(8, 3),
             };
-            //diamonds = new List<Diamond>
-            //{
-            //    new Diamond(5,5),
-            //};
+
+          // diamonds = new List<Diamond>
+          // {
+          //     new Diamond(6, 5),
+          //     new Diamond(8, 3)
+          // };
         }
-        static void DisplayHUD(Player player, List<Enemy> enemies, Map map)
+
+        public void DisplayLegend()
+        {
+            Console.SetCursorPosition(0, map.maxY + 4);
+            Console.WriteLine("| Map Legend");
+            Console.SetCursorPosition(0, map.maxY + 5);
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write("| Player = + ");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Write(" Enemy 1 = B ");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write(" Enemy 2 =   |");
+            Console.WriteLine("\n");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write("| Walls = # |");
+            Console.WriteLine("\n");
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.Write("| Floor = - |");
+            Console.WriteLine("\n");
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.Write("| Diamonds = @ ");
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.Write(" SpikeTrap = ^ ");
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.Write(" Exit = X |");
+            Console.ResetColor();
+            Console.WriteLine();
+        }
+        public void DisplayHUD(Player player, List<Enemy> enemies, Map map)
         {
 
             Console.SetCursorPosition(0, map.maxY + 1);
@@ -45,6 +77,7 @@ namespace TestingMap
             {
                 Console.Write($"|| Enemy Health: {enemy.currentHP}/{enemy.maxHP} ||");
             }
+            DisplayLegend();
         }
 
         public void Start()
@@ -66,11 +99,16 @@ namespace TestingMap
                 Console.Clear();
 
                 // Draw the map, HUD, and other elements
-                map.DrawMap(player, enemies, spikes);
+                map.DrawMap(player, enemies, spikes, exit);
                 DisplayHUD(player, enemies, map);
 
                 // Handle player input
-                player.PlayerInput(map, enemies);
+                player.PlayerInput(map, enemies,exit);
+               
+                if (exit.IsPlayerOnExit(player))
+                {
+                    player.YouWin = true;
+                }
 
                 if (player.GameOver)
                 {
@@ -85,8 +123,8 @@ namespace TestingMap
                 {
                     enemy.Move(map, player);
                     enemy.Attack(player);
-                    player.CheckForSpikes(spikes);
-                    player.Draw(spikes);
+                   //player.CheckForSpikes(spikes);
+                   //player.Draw(spikes);
 
                     if (!enemy.enemyAlive)
                     {
@@ -98,6 +136,8 @@ namespace TestingMap
                         enemy.EnemyPosition();
                     }
                 }
+                player.CheckForSpikes(spikes);
+                player.Draw(spikes);
 
                 // Check if the player is still alive
                 if (player.currentHP > 0)

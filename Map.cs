@@ -39,7 +39,7 @@ namespace TestingMap
             }
         }
 
-        public void DrawMap(Player player, List<Enemy> enemies, List<Spike> spikes)
+        public void DrawMap(Player player, List<Enemy> enemies, List<Spike> spikes, Exit exit)
         {
             Console.Clear();
 
@@ -48,7 +48,27 @@ namespace TestingMap
                 for (int j = 0; j < maxX; j++)
                 {
                     // Drawing logic
-                    Console.Write(mapLayout[i, j]);
+                    char currentTile = mapLayout[i, j];
+
+                    Console.ForegroundColor = GetTileColor(currentTile);
+
+                    if (currentTile == 'B')
+                    {
+                        // Check if the enemy is alive before drawing
+                        Enemy enemy = enemies.FirstOrDefault(e => e.posX == j && e.posY == i);
+                        if (enemy != null && enemy.enemyAlive)
+                        {
+                            Console.Write(currentTile);
+                        }
+                        else
+                        {
+                            Console.Write('-'); // Draw an empty space for defeated enemies
+                        }
+                    }
+                    else
+                    {
+                        Console.Write(currentTile);
+                    }
                 }
                 Console.WriteLine();
             }
@@ -56,16 +76,48 @@ namespace TestingMap
             player.PlayerPosition();
             foreach (var enemy in enemies)
             {
-                enemy.EnemyPosition();
+                // Draw enemies only if they are alive
+                if (enemy.enemyAlive)
+                {
+                    enemy.EnemyPosition();
+                }
             }
+
             foreach (var spike in spikes)
             {
                 spike.Draw();
             }
-            player.Draw(spikes);
+
+            Console.SetCursorPosition(exit.ExitX, exit.ExitY);
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.Write("X");
+            Console.ResetColor();
 
             Console.SetCursorPosition(0, 0);
         }
+
+        private ConsoleColor GetTileColor(char tile)
+        {
+            switch (tile)
+            {
+                case '#':
+                    return ConsoleColor.Cyan; // Walls
+                case '-':
+                    return ConsoleColor.Gray; // Floor
+                case 'B':
+                    return ConsoleColor.Red; // Enemy
+                case '@':
+                    return ConsoleColor.Blue; // Diamonds
+                case '^':
+                    return ConsoleColor.DarkGray; // SpikeTrap
+                case 'X':
+                    return ConsoleColor.Magenta; // Exit
+                default:
+                    return ConsoleColor.White; // Default color
+            }
+        }
+
+
         public void UpdateMapTile(int y, int x, char tile)
         {
             mapLayout[y, x] = tile;
